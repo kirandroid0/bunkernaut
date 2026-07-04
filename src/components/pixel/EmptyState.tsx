@@ -1,3 +1,4 @@
+/** Illustrated empty state for courses, stats, or generic content. */
 import { PIXEL_ASSETS, assetCandidates } from '@/assets/pixelManifest'
 import { ICON_SIZES } from '@/assets/iconSizes'
 import { PixelImage } from './PixelImage'

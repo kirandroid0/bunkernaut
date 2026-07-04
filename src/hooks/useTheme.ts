@@ -1,3 +1,4 @@
+/** Syncs light/dark theme to the data-theme attribute on <html>. */
 import { useEffect } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 

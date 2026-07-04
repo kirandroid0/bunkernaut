@@ -1,3 +1,4 @@
+/** Modal flow: bunk verdict → confirm override → log decision. */
 import { useState } from 'react'
 import type { ScheduledClass } from '@/types'
 import type { BunkUserAction } from '@/types'

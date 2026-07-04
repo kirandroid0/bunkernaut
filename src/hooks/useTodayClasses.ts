@@ -1,3 +1,4 @@
+/** Expands weekly slots into scheduled classes for a given date. */
 import { useMemo } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import { getTodayClasses } from '@/utils/timetable'

@@ -1,3 +1,4 @@
+/** Weekly timetable grid showing all scheduled L/T/P slots. */
 import { useMemo } from 'react'
 import { startOfWeek, addDays, format } from 'date-fns'
 import { useAppStore } from '@/store/useAppStore'

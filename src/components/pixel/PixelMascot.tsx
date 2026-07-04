@@ -1,3 +1,4 @@
+/** Renders the frog mascot image for a given mood (sparkly/happy/nervous/sleepy). */
 import { mascotCandidates, MASCOT_PLACEHOLDER_LABELS } from '@/assets/pixelManifest'
 import { ICON_SIZES } from '@/assets/iconSizes'
 import type { MascotMood } from '@/types'

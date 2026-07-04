@@ -1,3 +1,4 @@
+/** Computes in-app nudges and schedules push reminders when enabled. */
 import { useEffect, useMemo } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import { getActiveNudges } from '@/utils/nudges'

@@ -1,3 +1,4 @@
+/** Celebration sparkle animation shown when marking Present. */
 import { motion } from 'framer-motion'
 import { PIXEL_ASSETS, assetCandidates } from '@/assets/pixelManifest'
 import { ICON_SIZES } from '@/assets/iconSizes'

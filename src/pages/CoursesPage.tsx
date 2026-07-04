@@ -1,3 +1,4 @@
+/** CRUD for courses and their L/T/P component schedules. */
 import { useState, useMemo } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import { computeCourseStats } from '@/utils/calculations'

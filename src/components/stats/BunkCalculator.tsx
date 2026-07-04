@@ -1,3 +1,4 @@
+/** Shows safe misses / recovery needed for a component or course rollup. */
 import type { ComponentStats } from '@/types'
 import { COMPONENT_TYPE_LABELS } from '@/types'
 import { BUNKS_AVAILABLE, formatBunksAvailable } from '@/utils/bunkLabels'

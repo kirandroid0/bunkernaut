@@ -1,3 +1,4 @@
+/** Semester management, holidays, export/import, demo data, and app preferences. */
 import { useRef, useState } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import { exportToJSON, exportToCSV, importFromJSON, downloadFile } from '@/utils/exportImport'

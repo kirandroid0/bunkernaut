@@ -1,3 +1,4 @@
+/** Home screen: today's classes, Bunkernaut cards, and nudge banners. */
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { useAttendanceStats } from '@/hooks/useAttendanceStats'

@@ -1,3 +1,4 @@
+/** Animated modal overlay for sheets and dialogs. */
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
 import type { ReactNode } from 'react'

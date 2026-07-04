@@ -1,3 +1,4 @@
+/** Line chart of weekly or monthly attendance % over time. */
 import {
   LineChart,
   Line,

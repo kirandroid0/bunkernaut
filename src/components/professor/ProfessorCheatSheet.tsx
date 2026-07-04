@@ -1,3 +1,4 @@
+/** Professor contact and personality notes shown before marking a class. */
 import type { ScheduledClass } from '@/types'
 import { COMPONENT_TYPE_LABELS } from '@/types'
 import { Card } from '@/components/ui/Card'

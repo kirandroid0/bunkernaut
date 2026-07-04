@@ -1,3 +1,4 @@
+/** Fixed bottom tab bar for the five main routes. */
 import { NavLink } from 'react-router-dom'
 import clsx from 'clsx'
 import { PixelNavIcon } from '@/components/pixel/PixelNavIcon'

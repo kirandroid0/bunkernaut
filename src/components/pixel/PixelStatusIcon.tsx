@@ -1,3 +1,4 @@
+/** Attendance status icon (Present/Absent/etc.) with pixel art fallback. */
 import { PIXEL_ASSETS, assetCandidates, STATUS_PLACEHOLDER_LABELS } from '@/assets/pixelManifest'
 import { ICON_SIZES } from '@/assets/iconSizes'
 import type { AttendanceStatus } from '@/types'

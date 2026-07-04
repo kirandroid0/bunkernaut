@@ -1,3 +1,4 @@
+/** Sun/moon button to toggle light and dark theme. */
 import { useAppStore } from '@/store/useAppStore'
 import { PIXEL_ASSETS, assetCandidates } from '@/assets/pixelManifest'
 import { ICON_SIZES } from '@/assets/iconSizes'

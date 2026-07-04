@@ -1,3 +1,7 @@
+/**
+ * Timetable expansion and heatmap data.
+ * Converts recurring weekly slots into concrete dated ScheduledClass instances.
+ */
 import { format, startOfWeek, addDays, parseISO, isWithinInterval } from 'date-fns'
 import type { Course, Semester, ScheduledClass, AttendanceEntry } from '@/types'
 import { generateId } from './id'
@@ -26,6 +30,7 @@ export function findEntryForClass(
   return entries.find((e) => e.componentId === componentId && e.date === date)
 }
 
+/** Expands all weekly slots for one week into dated ScheduledClass objects. */
 export function expandWeeklySlots(
   semester: Semester,
   weekStart: Date,
@@ -83,6 +88,7 @@ export function getWeekSchedule(semester: Semester, weekStart: Date): ScheduledC
   return expandWeeklySlots(semester, weekStart)
 }
 
+/** All scheduled classes on a specific calendar date. */
 export function getTodayClasses(semester: Semester, date: Date): ScheduledClass[] {
   const weekStart = getWeekStart(date)
   const dateStr = formatDateISO(date)
@@ -104,6 +110,7 @@ export function createDefaultEntry(
   }
 }
 
+/** Daily attendance scores for heatmap cells (null = no data that day). */
 export function getHeatmapData(
   semester: Semester,
   startDate: Date,

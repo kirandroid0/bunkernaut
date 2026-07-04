@@ -1,3 +1,7 @@
+/**
+ * Central app state persisted to localStorage (key: attendance-tracker-v1).
+ * Manages semesters, courses, attendance entries, holidays, and settings.
+ */
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type {
@@ -24,6 +28,7 @@ const defaultSettings: AppSettings = {
   dismissedNudgeIds: [],
 }
 
+/** Creates an empty semester with sensible default date range. */
 function createDefaultSemester(name?: string): Semester {
   const now = new Date()
   const year = now.getFullYear()
@@ -286,6 +291,7 @@ export const useAppStore = create<AppStore>()(
         set({ semesters, activeSemesterId, settings })
       },
 
+      /** Replaces any prior demo semester and sets it active. */
       loadDemoData: () => {
         const demo = createDemoSemester()
         set((state) => ({

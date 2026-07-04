@@ -1,3 +1,4 @@
+/** Haptic and sound feedback when marking attendance. */
 let audioCtx: AudioContext | null = null
 
 function getAudioContext(): AudioContext | null {

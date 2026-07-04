@@ -1,3 +1,4 @@
+/** Dismissible banner for end-of-day or preemptive threshold nudges. */
 import { Link } from 'react-router-dom'
 import type { Nudge } from '@/utils/nudges'
 import { Button } from '@/components/ui/Button'

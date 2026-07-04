@@ -1,3 +1,4 @@
+/** Top-level route definitions — all pages render inside AppShell. */
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { DashboardPage } from '@/pages/DashboardPage'

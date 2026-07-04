@@ -1,3 +1,9 @@
+/**
+ * Bunk (skip-class) budgeting and verdict logic.
+ *
+ * "Safe misses" = how many more absences before dropping below threshold.
+ * Bunk verdicts project what happens if you skip the next class.
+ */
 import type { Course, Semester } from '@/types'
 import type { BunkVerdict, BunkVerdictResult, BunkBudgetLine, SemesterBunkBudget } from '@/types/bunk'
 import { COMPONENT_TYPE_LABELS } from '@/types'
@@ -10,6 +16,7 @@ import {
   getDangerLevel,
 } from './calculations'
 
+/** Count Absent entries in a given calendar month. */
 export function countAbsencesInMonth(
   entries: Semester['entries'],
   year: number,
@@ -19,6 +26,10 @@ export function countAbsencesInMonth(
   return entries.filter((e) => e.date.startsWith(prefix) && e.status === 'Absent').length
 }
 
+/**
+ * Semester-wide bunk budget: total safe misses across all components,
+ * plus the tightest component and this month's absence count.
+ */
 export function computeSemesterBunkBudget(
   semester: Semester,
   now: Date = new Date(),
@@ -58,6 +69,7 @@ export function computeSemesterBunkBudget(
   }
 }
 
+/** Per-component bunk budget lines, sorted tightest-first. */
 export function getBunkBudgetBreakdown(semester: Semester): BunkBudgetLine[] {
   const lines: BunkBudgetLine[] = []
 
@@ -81,6 +93,10 @@ export function getBunkBudgetBreakdown(semester: Semester): BunkBudgetLine[] {
   })
 }
 
+/**
+ * What-if projection: attendance % and safe misses if you skip one more class.
+ * Adds one to total without adding to attended.
+ */
 export function projectPctIfAbsent(
   course: Course,
   componentId: string,
@@ -102,6 +118,13 @@ export function projectPctIfAbsent(
   return { pctBefore, pctAfter, safeMissesBefore, safeMissesAfter }
 }
 
+/**
+ * Bunk-or-not verdict for a specific upcoming class.
+ *
+ * dont_bunk — already below threshold or zero safe misses
+ * risky     — in warning zone or skipping reduces margin
+ * bunk      — safe to skip without dropping below threshold
+ */
 export function computeBunkVerdict(
   course: Course,
   componentId: string,
@@ -143,6 +166,7 @@ export function computeBunkVerdict(
   }
 }
 
+/** Display helper: Infinity and large values show as ∞. */
 export function formatSafeMisses(n: number): string {
   if (n === Infinity || n > 99) return '∞'
   return String(n)

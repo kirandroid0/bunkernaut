@@ -1,3 +1,4 @@
+/** List of scheduled classes for a day with mark and bunk-or-not actions. */
 import clsx from 'clsx'
 import type { ScheduledClass } from '@/types'
 import { COMPONENT_TYPE_LABELS } from '@/types'

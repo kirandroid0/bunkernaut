@@ -1,3 +1,4 @@
+/** Chronological list of bunk-or-not decisions with override tracking. */
 import type { BunkDecision } from '@/types'
 import { COMPONENT_TYPE_LABELS } from '@/types'
 import { Card } from '@/components/ui/Card'

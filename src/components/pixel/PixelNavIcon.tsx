@@ -1,3 +1,4 @@
+/** Bottom nav tab icon with pixel art fallback. */
 import { PIXEL_ASSETS, assetCandidates } from '@/assets/pixelManifest'
 import { ICON_SIZES } from '@/assets/iconSizes'
 import { PixelImage } from './PixelImage'

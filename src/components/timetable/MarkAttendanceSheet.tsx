@@ -1,3 +1,4 @@
+/** Modal for marking Present/Absent/Cancelled/Holiday/Makeup on a class. */
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import type { AttendanceStatus, ProfMood, ScheduledClass } from '@/types'

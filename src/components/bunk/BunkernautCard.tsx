@@ -1,3 +1,4 @@
+/** Per-course frog mascot card showing bunk budget and L/T/P breakdown. */
 import { Card } from '@/components/ui/Card'
 import { DangerBadge } from '@/components/ui/Badge'
 import { PixelMascot } from '@/components/pixel/PixelMascot'

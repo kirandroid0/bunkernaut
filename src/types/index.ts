@@ -1,3 +1,4 @@
+/** Domain types for courses, attendance entries, semesters, and stats. */
 export type ComponentType = 'Lecture' | 'Tutorial' | 'Practical'
 
 export type AttendanceStatus =
@@ -141,18 +142,6 @@ export const COMPONENT_TYPE_LABELS: Record<ComponentType, string> = {
   Practical: 'P',
 }
 
-export const COMPONENT_TYPE_FULL: Record<ComponentType, string> = {
-  Lecture: 'Lecture',
-  Tutorial: 'Tutorial',
-  Practical: 'Practical',
-}
-
-export const COMPONENT_TYPE_DESC: Record<ComponentType, string> = {
-  Lecture: 'Main classroom sessions — theory & chalkboard time',
-  Tutorial: 'Smaller batches — doubts, problems & discussions',
-  Practical: 'Lab & workshop — hands-on experiments & coding',
-}
-
 export const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const
 
 export const COURSE_COLORS = [
@@ -162,7 +151,5 @@ export const COURSE_COLORS = [
   '#766153',
   '#EFF1ED',
 ]
-
-export const COURSE_ICONS = ['📚', '🔬', '💻', '🧮', '⚡', '🎨', '🏛️', '📝', '🧪', '📐']
 
 export type { BunkDecision, BunkUserAction, BunkVerdict } from './bunk'

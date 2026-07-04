@@ -1,3 +1,4 @@
+/** JSON/CSV backup export and restore for semester data. */
 import type { AppState, Semester } from '@/types'
 
 export function validateImportData(data: unknown): data is AppState {

@@ -1,3 +1,4 @@
+/** Pick any date to mark attendance or use the professor cheat sheet. */
 import { useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { useTodayClasses } from '@/hooks/useTodayClasses'

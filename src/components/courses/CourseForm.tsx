@@ -1,3 +1,4 @@
+/** Add/edit course modal with professor info and component editor. */
 import { useEffect, useState } from 'react'
 import type { Course } from '@/types'
 import { COURSE_COLORS } from '@/types'

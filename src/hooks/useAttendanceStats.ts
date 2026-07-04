@@ -1,31 +1,20 @@
 import { useMemo } from 'react'
 import { useAppStore } from '@/store/useAppStore'
-import {
-  computeCourseStats,
-  computeSemesterGPA,
-  deriveMascotMood,
-} from '@/utils/calculations'
+import { computeCourseStats } from '@/utils/calculations'
 
+/** Derives per-course attendance stats for the active semester. */
 export function useAttendanceStats() {
   const semester = useAppStore((s) => s.getActiveSemester())
 
   return useMemo(() => {
     if (!semester) {
-      return {
-        courseStats: [],
-        semesterGPA: 100,
-        mascotMood: 'happy' as const,
-      }
+      return { courseStats: [] }
     }
 
     const courseStats = semester.courses.map((c) =>
       computeCourseStats(c, semester.entries),
     )
 
-    return {
-      courseStats,
-      semesterGPA: computeSemesterGPA(semester),
-      mascotMood: deriveMascotMood(semester),
-    }
+    return { courseStats }
   }, [semester])
 }

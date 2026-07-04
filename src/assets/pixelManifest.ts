@@ -1,3 +1,4 @@
+/** Pixel art asset paths and format fallback chains for the PWA. */
 import type { AttendanceStatus, MascotMood } from '@/types'
 
 const BASE = '/assets/pixel'

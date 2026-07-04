@@ -1,3 +1,4 @@
+/** Analytics: heatmap, trends, bunk calculator, decision log, and timetable grid. */
 import { useState } from 'react'
 import { useAttendanceStats } from '@/hooks/useAttendanceStats'
 import { useAppStore } from '@/store/useAppStore'

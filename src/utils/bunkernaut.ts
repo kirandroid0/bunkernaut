@@ -1,3 +1,4 @@
+/** Formats course-level safe misses for BunkernautCard display. */
 import type { CourseStats } from '@/types'
 import { formatSafeMisses } from '@/utils/bunk'
 

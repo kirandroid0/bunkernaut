@@ -1,3 +1,4 @@
+/** Safe/warning/danger badge for attendance threshold status. */
 import clsx from 'clsx'
 import type { DangerLevel } from '@/types'
 

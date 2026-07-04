@@ -1,3 +1,4 @@
+/** Summary card for a course showing %, danger level, and component breakdown. */
 import { Card } from '@/components/ui/Card'
 import { DangerBadge } from '@/components/ui/Badge'
 import { BUNKS_AVAILABLE, formatBunksAvailable } from '@/utils/bunkLabels'

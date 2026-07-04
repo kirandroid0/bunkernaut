@@ -1,3 +1,4 @@
+/** Good/neutral/grumpy picker for professor mood on an attendance entry. */
 import type { ProfMood } from '@/types'
 import clsx from 'clsx'
 

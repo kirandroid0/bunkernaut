@@ -1,3 +1,4 @@
+/** Loads pixel art with format fallback chain (.gif → .png → .svg → text label). */
 import { useState } from 'react'
 import clsx from 'clsx'
 

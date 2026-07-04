@@ -1,3 +1,4 @@
+/** Dropdown to switch between semesters (including archived). */
 import { useAppStore } from '@/store/useAppStore'
 
 export function SemesterSwitcher() {

@@ -1,3 +1,4 @@
+/** Settings explainer for course %, frog mood, and bunk budget terminology. */
 import { Card } from '@/components/ui/Card'
 import { BUNKS_AVAILABLE } from '@/utils/bunkLabels'
 

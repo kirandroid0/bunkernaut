@@ -1,3 +1,4 @@
+/** End-of-day and preemptive threshold nudge generation. */
 import { addDays, format } from 'date-fns'
 import type { Semester } from '@/types'
 import { COMPONENT_TYPE_LABELS } from '@/types'

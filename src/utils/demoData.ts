@@ -1,3 +1,7 @@
+/**
+ * Demo semester seed data for Settings → "Load demo".
+ * Creates 5 courses with ~20 days of tuned attendance for frogs, heatmap, and bunk budget.
+ */
 import { eachDayOfInterval, format } from 'date-fns'
 import type { Course, Semester, AttendanceEntry, WeeklySlot } from '@/types'
 import { COURSE_COLORS } from '@/types'
@@ -217,6 +221,7 @@ export function createDemoSemester(): Semester {
   }
 }
 
+/** Human-readable summary of demo semester size — useful for validating bunk budget tests. */
 export function describeDemoBunkBudget(): string {
   const semester = createDemoSemester()
   const uniqueDays = new Set(semester.entries.map((e) => e.date)).size

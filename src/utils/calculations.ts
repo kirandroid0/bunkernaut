@@ -1,13 +1,25 @@
+/**
+ * Core attendance math for Bunkernaut.
+ *
+ * Percentages count only Present, Absent, and Makeup entries.
+ * Cancelled and Holiday entries are excluded from totals.
+ *
+ * Course-level % is a credit-weighted average of graded L/T/P components
+ * (e.g. L×3 + T×1 + P×2, divided by total credits).
+ */
 import type { AttendanceEntry, AttendanceStatus, Course, Semester } from '@/types'
 
+/** Whether this status counts toward attendance totals (numerator and denominator). */
 export function isCountableStatus(status: AttendanceStatus): boolean {
   return status === 'Present' || status === 'Absent' || status === 'Makeup'
 }
 
+/** Whether this status counts as attended (numerator only). Makeup counts as present. */
 export function isAttendedStatus(status: AttendanceStatus): boolean {
   return status === 'Present' || status === 'Makeup'
 }
 
+/** All attendance entries for a single L/T/P component. */
 export function filterComponentEntries(
   entries: AttendanceEntry[],
   componentId: string,
@@ -15,6 +27,7 @@ export function filterComponentEntries(
   return entries.filter((e) => e.componentId === componentId)
 }
 
+/** Count attended, missed, and total countable classes for a component. */
 export function computeComponentCounts(entries: AttendanceEntry[]) {
   let attended = 0
   let missed = 0
@@ -28,11 +41,23 @@ export function computeComponentCounts(entries: AttendanceEntry[]) {
   return { attended, missed, total: attended + missed }
 }
 
+/**
+ * Attendance percentage rounded to one decimal.
+ * Returns 100% when no classes have been marked yet (empty denominator).
+ */
 export function computePercentage(attended: number, total: number): number {
   if (total === 0) return 100
   return Math.round((attended / total) * 1000) / 10
 }
 
+/**
+ * How many more absences are allowed before dropping below the threshold.
+ *
+ * Derived from: (attended + x) / (total + x) >= threshold/100
+ * Solving for x gives: x = floor(attended / (threshold/100) - total)
+ *
+ * Returns Infinity when total is 0 (no classes marked — unlimited buffer).
+ */
 export function computeSafeMisses(
   attended: number,
   total: number,
@@ -43,6 +68,11 @@ export function computeSafeMisses(
   return Math.max(0, raw)
 }
 
+/**
+ * How many consecutive presents are needed to recover when below threshold.
+ *
+ * Solves (attended + x) / (total + x) >= threshold/100 for x.
+ */
 export function computeRecoveryNeeded(
   attended: number,
   total: number,
@@ -56,6 +86,7 @@ export function computeRecoveryNeeded(
   return Math.max(0, Math.ceil(needed))
 }
 
+/** Maps percentage vs threshold to safe / warning (within 5%) / danger (below). */
 export function getDangerLevel(
   percentage: number,
   threshold: number,
@@ -65,16 +96,19 @@ export function getDangerLevel(
   return 'safe'
 }
 
+/** Whether a component contributes to credit-weighted course % and bunk counts. */
 export function isGraded(component: { graded?: boolean; mandatory?: boolean }): boolean {
   if (component.graded !== undefined) return component.graded
   return (component as { mandatory?: boolean }).mandatory !== false
 }
 
+/** Prefer explicitly graded components; fall back to all if none are graded. */
 export function pickGraded<T extends { graded: boolean }>(components: T[]): T[] {
   const graded = components.filter((c) => c.graded)
   return graded.length > 0 ? graded : components
 }
 
+/** Credit-weighted average of component percentages. */
 export function weightedAverageByCredits(
   items: { percentage: number; credits: number }[],
 ): number {
@@ -84,6 +118,7 @@ export function weightedAverageByCredits(
   return Math.round(weighted * 10) / 10
 }
 
+/** Full stats for one L/T/P component: counts, %, safe misses, recovery, danger level. */
 export function computeComponentStats(
   course: Course,
   componentId: string,
@@ -114,6 +149,13 @@ export function computeComponentStats(
   }
 }
 
+/**
+ * Rolls up all components into course-level stats.
+ *
+ * Overall % uses credit-weighted average of graded components only.
+ * Course safe misses aggregate attended/total across graded components,
+ * then apply the same safe-miss formula at the course threshold.
+ */
 export function computeCourseStats(course: Course, entries: AttendanceEntry[]) {
   const components = course.components
     .map((c) => computeComponentStats(course, c.id, entries))
@@ -154,6 +196,7 @@ export function computeCourseStats(course: Course, entries: AttendanceEntry[]) {
   }
 }
 
+/** Semester-wide credit-weighted attendance % across all graded components. */
 export function computeSemesterGPA(semester: Semester): number {
   const allStats = semester.courses.flatMap((course) => {
     const comps = pickGraded(
@@ -173,6 +216,10 @@ export function computeSemesterGPA(semester: Semester): number {
   )
 }
 
+/**
+ * Frog mascot mood for a single course based on % vs threshold.
+ * sleepy = below, nervous = within 5%, happy = 5–15% above, sparkly = 15%+ above.
+ */
 export function deriveCourseMascotMood(
   stats: Pick<import('@/types').CourseStats, 'percentage' | 'threshold'>,
 ): import('@/types').MascotMood {
@@ -183,6 +230,7 @@ export function deriveCourseMascotMood(
   return 'happy'
 }
 
+/** Worst mood across all courses — the frog reflects your weakest link. */
 export function deriveMascotMood(semester: Semester): import('@/types').MascotMood {
   const courseStats = semester.courses.map((c) => computeCourseStats(c, semester.entries))
 
@@ -199,6 +247,7 @@ export function deriveMascotMood(semester: Semester): import('@/types').MascotMo
   return moods.reduce((worst, m) => (rank[m] < rank[worst] ? m : worst), 'sparkly' as import('@/types').MascotMood)
 }
 
+/** Fraction of countable classes attended on a given day (0–1), or null if no data. */
 export function getDailyAttendanceScore(
   entries: AttendanceEntry[],
   date: string,
@@ -212,6 +261,7 @@ export function getDailyAttendanceScore(
   return attended / dayEntries.length
 }
 
+/** Buckets countable entries into weekly or monthly attendance % for trend charts. */
 export function getTrendData(
   semester: Semester,
   mode: 'weekly' | 'monthly',

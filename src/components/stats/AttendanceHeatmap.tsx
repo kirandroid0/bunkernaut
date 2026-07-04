@@ -1,3 +1,4 @@
+/** 12-week grid of daily attendance scores with color-coded cells. */
 import { useMemo } from 'react'
 import { subWeeks, startOfWeek } from 'date-fns'
 import { useAppStore } from '@/store/useAppStore'

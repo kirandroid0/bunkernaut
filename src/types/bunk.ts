@@ -1,3 +1,4 @@
+/** Bunk decision, verdict, and budget types. */
 export type BunkVerdict = 'bunk' | 'dont_bunk' | 'risky'
 
 export type BunkUserAction =

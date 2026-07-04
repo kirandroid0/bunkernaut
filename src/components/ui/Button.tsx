@@ -1,3 +1,4 @@
+/** Pixel-styled button with primary/secondary/ghost/danger variants. */
 import clsx from 'clsx'
 import type { ButtonHTMLAttributes } from 'react'
 

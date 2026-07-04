@@ -1,3 +1,4 @@
+/** Editor for L/T/P components: credits, graded flag, and weekly time slots. */
 import { generateId } from '@/utils/id'
 import type { CourseComponent, ComponentType, WeeklySlot } from '@/types'
 import { DAY_LABELS } from '@/types'
