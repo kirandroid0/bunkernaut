@@ -21,23 +21,24 @@
   --font-body: 'Roboto Mono', ui-monospace, monospace;
 }
 
+/* Forest Green Oasis — Ink / Spruce / Hunter / Olive (accent only) */
 [data-theme='dark'] {
-  --color-bg: #373d20;
-  --color-bg-secondary: #717744;
-  --color-surface: #717744;
-  --color-text: #eff1ed;
-  --color-text-muted: #bcbd8b;
-  --color-accent: #bcbd8b;
-  --color-accent-strong: #eff1ed;
-  --color-border: #eff1ed;
-  --color-highlight: #717744;
-  --color-danger: #766153;
-  --color-warning: #bcbd8b;
-  --color-success: #bcbd8b;
-  --color-primary-btn: #bcbd8b;
-  --color-primary-btn-text: #373d20;
-  --shadow-soft: 4px 4px 0 #eff1ed;
-  --shadow-card: 4px 4px 0 #eff1ed;
+  --color-bg: #0d1f22;
+  --color-surface: #264027;
+  --color-bg-secondary: #3c5233;
+  --color-text: #e4ebe6;
+  --color-text-muted: #8fa38c;
+  --color-accent: #6f732f;
+  --color-accent-strong: #e4ebe6;
+  --color-border: #4a6342;
+  --color-highlight: #264027;
+  --color-danger: #c99284;
+  --color-warning: #6f732f;
+  --color-success: #5a7a52;
+  --color-primary-btn: #3c5233;
+  --color-primary-btn-text: #e4ebe6;
+  --shadow-soft: 4px 4px 0 rgba(0, 0, 0, 0.45);
+  --shadow-card: 4px 4px 0 rgba(0, 0, 0, 0.55);
 }
 
 body {

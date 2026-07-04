@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import { computeCourseStats } from '@/utils/calculations'
+import { entriesWithRescheduled } from '@/utils/rescheduled'
 
 /** Derives per-course attendance stats for the active semester. */
 export function useAttendanceStats() {
@@ -11,9 +12,8 @@ export function useAttendanceStats() {
       return { courseStats: [] }
     }
 
-    const courseStats = semester.courses.map((c) =>
-      computeCourseStats(c, semester.entries),
-    )
+    const entries = entriesWithRescheduled(semester)
+    const courseStats = semester.courses.map((c) => computeCourseStats(c, entries))
 
     return { courseStats }
   }, [semester])

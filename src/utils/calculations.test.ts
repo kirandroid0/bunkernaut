@@ -45,12 +45,11 @@ describe('computeComponentCounts', () => {
       entry('comp-l', 'Absent', '2026-07-03'),
       entry('comp-l', 'Cancelled', '2026-07-04'),
       entry('comp-l', 'Holiday', '2026-07-05'),
-      entry('comp-l', 'Makeup', '2026-07-06'),
     ]
     const result = computeComponentCounts(entries)
-    expect(result.attended).toBe(3)
+    expect(result.attended).toBe(2)
     expect(result.missed).toBe(1)
-    expect(result.total).toBe(4)
+    expect(result.total).toBe(3)
   })
 })
 
@@ -124,7 +123,6 @@ describe('computeSemesterGPA', () => {
         entry('comp-l', 'Present', '2026-07-02'),
       ],
       holidays: [],
-      bunkDecisions: [],
       archived: false,
     }
     expect(computeSemesterGPA(semester)).toBe(100)
@@ -154,7 +152,6 @@ describe('deriveMascotMood', () => {
         entry('comp-l', 'Present', `2026-07-${String(i + 1).padStart(2, '0')}`),
       ),
       holidays: [],
-      bunkDecisions: [],
       archived: false,
     }
     expect(deriveMascotMood(semester)).toBe('sparkly')
@@ -173,7 +170,6 @@ describe('deriveCourseMascotMood', () => {
         entry('comp-l', 'Present', `2026-07-${String(i + 1).padStart(2, '0')}`),
       ),
       holidays: [],
-      bunkDecisions: [],
       archived: false,
     }
     const stats = computeCourseStats(semester.courses[0], semester.entries)
@@ -197,7 +193,6 @@ describe('deriveCourseMascotMood', () => {
         entry('comp-l', i < 7 ? 'Present' : 'Absent', `2026-07-0${i + 1}`),
       ),
       holidays: [],
-      bunkDecisions: [],
       archived: false,
     }
     const stats = computeCourseStats(semester.courses[0], semester.entries)
@@ -228,7 +223,6 @@ describe('deriveCourseMascotMood', () => {
         entry('comp-t', 'Absent', '2026-07-02'),
       ],
       holidays: [],
-      bunkDecisions: [],
       archived: false,
     }
     const stats = computeCourseStats(semester.courses[0], semester.entries)
@@ -249,7 +243,6 @@ describe('deriveCourseMascotMood', () => {
         entry('comp-l', 'Absent', '2026-07-03'),
       ],
       holidays: [],
-      bunkDecisions: [],
       archived: false,
     }
     const stats = computeCourseStats(semester.courses[0], semester.entries)
@@ -272,7 +265,6 @@ describe('deriveCourseMascotMood', () => {
         entry('comp-l', i < 3 ? 'Present' : 'Absent', `2026-07-0${i + 1}`),
       ),
       holidays: [],
-      bunkDecisions: [],
       archived: false,
     }
     const stats = computeCourseStats(semester.courses[0], semester.entries)

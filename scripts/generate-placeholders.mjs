@@ -121,13 +121,6 @@ const files = {
      <rect x="6" y="8" width="12" height="8" fill="${C.olive}"/>
      <rect x="10" y="4" width="4" height="4" fill="${C.dark}"/>`,
   ),
-  'status-makeup.svg': svg(
-    24,
-    24,
-    `<rect x="3" y="3" width="18" height="18" fill="${C.sage}"/>
-     <rect x="7" y="7" width="10" height="10" fill="${C.olive}"/>
-     <rect x="10" y="10" width="4" height="4" fill="${C.cream}"/>`,
-  ),
 
   'empty-courses.svg': svg(
     96,

@@ -2,6 +2,7 @@
 import { useState, useMemo } from 'react'
 import { useAppStore } from '@/store/useAppStore'
 import { computeCourseStats } from '@/utils/calculations'
+import { entriesWithRescheduled } from '@/utils/rescheduled'
 import { CourseCard } from '@/components/courses/CourseCard'
 import { CourseForm } from '@/components/courses/CourseForm'
 import { Button } from '@/components/ui/Button'
@@ -28,18 +29,18 @@ export function CoursesPage() {
 
   const courseStats = useMemo(() => {
     if (!semester) return []
-    return filteredCourses.map((c) => computeCourseStats(c, semester.entries))
+    return filteredCourses.map((c) => computeCourseStats(c, entriesWithRescheduled(semester)))
   }, [semester, filteredCourses])
 
   const isArchived = semester?.archived
 
   return (
-    <div className="space-y-5 pb-4">
-      <header className="flex items-center justify-between">
+    <div className="page-stack">
+      <header className="page-header flex items-center justify-between">
         <div>
-          <h1 className="heading-impact text-2xl text-[var(--color-text)]">Courses</h1>
-          <p className="text-sm text-[var(--color-text-muted)]">
-            {isArchived ? 'View only (archived semester)' : 'Manage your L/T/P setup'}
+          <h1 className="heading-impact text-xl text-[var(--color-text)]">Courses</h1>
+          <p className="font-mono-body text-[11px] text-[var(--color-text-muted)]">
+            {isArchived ? 'Archived — view only' : 'L / T / P setup'}
           </p>
         </div>
         {!isArchived && (
@@ -70,19 +71,14 @@ export function CoursesPage() {
                     setFormOpen(true)
                   }
                 }}
+                onDelete={
+                  !isArchived && course
+                    ? () => {
+                        if (confirm(`Delete ${course.name}?`)) deleteCourse(course.id)
+                      }
+                    : undefined
+                }
               />
-              {!isArchived && course && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-1 text-[var(--color-danger)]"
-                  onClick={() => {
-                    if (confirm(`Delete ${course.name}?`)) deleteCourse(course.id)
-                  }}
-                >
-                  Delete course
-                </Button>
-              )}
             </div>
           )
         })}

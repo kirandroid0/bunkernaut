@@ -8,10 +8,11 @@ import type {
   AppSettings,
   AttendanceEntry,
   AttendanceStatus,
-  BunkDecision,
   Course,
   Holiday,
   ProfMood,
+  RescheduledSession,
+  RescheduledStatus,
   Semester,
 } from '@/types'
 import { generateId } from '@/utils/id'
@@ -44,8 +45,8 @@ function createDefaultSemester(name?: string): Semester {
     endDate: `${endYear}-${String(startMonth + 5).padStart(2, '0')}-30`,
     courses: [],
     entries: [],
+    rescheduledSessions: [],
     holidays: [],
-    bunkDecisions: [],
     archived: false,
   }
 }
@@ -76,11 +77,25 @@ interface AppStore {
   ) => void
   deleteAttendance: (entryId: string) => void
 
+  upsertRescheduledSession: (
+    session: Omit<RescheduledSession, 'id' | 'status' | 'profMood'> & {
+      id?: string
+      status?: RescheduledStatus
+      profMood?: ProfMood
+    },
+  ) => void
+  markRescheduledSession: (
+    sessionId: string,
+    status: RescheduledStatus,
+    durationMinutes: number,
+    profMood?: ProfMood,
+  ) => void
+  removeRescheduledSession: (componentId: string, originalDate: string) => void
+
   addHoliday: (date: string, label: string) => void
   removeHoliday: (id: string) => void
 
   updateSettings: (updates: Partial<AppSettings>) => void
-  logBunkDecision: (decision: Omit<BunkDecision, 'id'>) => void
   dismissNudge: (nudgeId: string) => void
   markEodNudgeShown: () => void
   markPreemptiveNudgeShown: () => void
@@ -184,6 +199,10 @@ export const useAppStore = create<AppStore>()(
               const course = s.courses.find((c) => c.id === courseId)
               return !course?.components.some((comp) => comp.id === e.componentId)
             }),
+            rescheduledSessions: (s.rescheduledSessions ?? []).filter((r) => {
+              const course = s.courses.find((c) => c.id === courseId)
+              return !course?.components.some((comp) => comp.id === r.componentId)
+            }),
           })),
         }))
       },
@@ -191,12 +210,20 @@ export const useAppStore = create<AppStore>()(
       upsertAttendance: (componentId, date, status, durationMinutes, profMood) => {
         set((state) => ({
           semesters: state.semesters.map((s) => {
+            let rescheduledSessions = s.rescheduledSessions ?? []
+            if (status !== 'Cancelled') {
+              rescheduledSessions = rescheduledSessions.filter(
+                (r) => !(r.componentId === componentId && r.originalDate === date),
+              )
+            }
+
             const existing = s.entries.find(
               (e) => e.componentId === componentId && e.date === date,
             )
             if (existing) {
               return {
                 ...s,
+                rescheduledSessions,
                 entries: s.entries.map((e) =>
                   e.id === existing.id
                     ? { ...e, status, durationMinutes, profMood }
@@ -212,7 +239,11 @@ export const useAppStore = create<AppStore>()(
               durationMinutes,
               profMood,
             }
-            return { ...s, entries: [...s.entries, entry] }
+            return {
+              ...s,
+              rescheduledSessions,
+              entries: [...s.entries, entry],
+            }
           }),
         }))
       },
@@ -222,6 +253,70 @@ export const useAppStore = create<AppStore>()(
           semesters: state.semesters.map((s) => ({
             ...s,
             entries: s.entries.filter((e) => e.id !== entryId),
+          })),
+        }))
+      },
+
+      upsertRescheduledSession: (sessionData) => {
+        set((state) => ({
+          semesters: state.semesters.map((s) => {
+            const sessions = s.rescheduledSessions ?? []
+            const existing = sessions.find(
+              (r) =>
+                r.componentId === sessionData.componentId &&
+                r.originalDate === sessionData.originalDate,
+            )
+            if (existing) {
+              return {
+                ...s,
+                rescheduledSessions: sessions.map((r) =>
+                  r.id === existing.id
+                    ? {
+                        ...r,
+                        ...sessionData,
+                        id: existing.id,
+                        status: sessionData.status ?? r.status,
+                        profMood: sessionData.profMood ?? r.profMood,
+                      }
+                    : r,
+                ),
+              }
+            }
+            const session: RescheduledSession = {
+              id: sessionData.id ?? generateId(),
+              componentId: sessionData.componentId,
+              originalDate: sessionData.originalDate,
+              rescheduledDate: sessionData.rescheduledDate,
+              startTime: sessionData.startTime,
+              durationMinutes: sessionData.durationMinutes,
+              status: sessionData.status,
+              profMood: sessionData.profMood,
+            }
+            return { ...s, rescheduledSessions: [...sessions, session] }
+          }),
+        }))
+      },
+
+      markRescheduledSession: (sessionId, status, durationMinutes, profMood) => {
+        set((state) => ({
+          semesters: state.semesters.map((s) => ({
+            ...s,
+            rescheduledSessions: (s.rescheduledSessions ?? []).map((r) =>
+              r.id === sessionId
+                ? { ...r, status, durationMinutes, profMood }
+                : r,
+            ),
+          })),
+        }))
+      },
+
+      removeRescheduledSession: (componentId, originalDate) => {
+        set((state) => ({
+          semesters: state.semesters.map((s) => ({
+            ...s,
+            rescheduledSessions: (s.rescheduledSessions ?? []).filter(
+              (r) => !(r.componentId === componentId && r.originalDate === originalDate),
+            ),
           })),
         }))
       },
@@ -247,17 +342,6 @@ export const useAppStore = create<AppStore>()(
 
       updateSettings: (updates) => {
         set((state) => ({ settings: { ...state.settings, ...updates } }))
-      },
-
-      logBunkDecision: (decision) => {
-        const entry: BunkDecision = { ...decision, id: generateId() }
-        set((state) => ({
-          semesters: state.semesters.map((s) =>
-            s.id === state.activeSemesterId
-              ? { ...s, bunkDecisions: [...(s.bunkDecisions ?? []), entry] }
-              : s,
-          ),
-        }))
       },
 
       dismissNudge: (nudgeId) => {
@@ -322,7 +406,10 @@ export const useAppStore = create<AppStore>()(
         if (state) {
           state.semesters = state.semesters.map((s) => ({
             ...s,
-            bunkDecisions: s.bunkDecisions ?? [],
+            rescheduledSessions: s.rescheduledSessions ?? [],
+            entries: s.entries.map((e) =>
+              (e.status as string) === 'Makeup' ? { ...e, status: 'Present' as const } : e,
+            ),
             courses: s.courses.map((c) => ({
               ...c,
               components: c.components.map((comp) => {

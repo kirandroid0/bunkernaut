@@ -5,7 +5,7 @@ import { exportToJSON, exportToCSV, importFromJSON, downloadFile } from '@/utils
 import { requestNotificationPermission } from '@/utils/notifications'
 import { SemesterSwitcher } from '@/components/layout/SemesterSwitcher'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
-import { BunkernautGuide } from '@/components/bunk/BunkernautGuide'
+import { UserManual } from '@/components/settings/UserManual'
 import { BUNKS_AVAILABLE } from '@/utils/bunkLabels'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -82,14 +82,80 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="space-y-5 pb-4">
-      <header className="flex items-center justify-between">
+    <div className="page-stack">
+      <header className="page-header flex items-center justify-between">
         <div>
-          <h1 className="heading-impact text-2xl text-[var(--color-text)]">Settings</h1>
-          <p className="font-mono-body text-xs text-[var(--color-text-muted)] mt-2 uppercase">Tweak Bunkernaut</p>
+          <h1 className="heading-impact text-xl text-[var(--color-text)]">Settings</h1>
+          <p className="font-mono-body text-[10px] text-[var(--color-text-muted)] mt-0.5">Prefs & data</p>
         </div>
         <ThemeToggle />
       </header>
+
+      <Card>
+        <h2 className="heading-impact text-sm mb-2">Default threshold</h2>
+        <label className="flex items-center justify-between py-1">
+          <span className="font-mono-body text-sm">New courses start at</span>
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={settings.defaultThreshold}
+              onChange={(e) => updateSettings({ defaultThreshold: Number(e.target.value) })}
+              className="w-14 px-2 py-1 pixel-input text-sm text-right"
+            />
+            <span className="font-mono-body text-sm text-[var(--color-text-muted)]">%</span>
+          </div>
+        </label>
+      </Card>
+
+      <Card padding="sm" className="overflow-hidden min-w-0">
+        <h2 className="heading-impact text-sm mb-1.5">Institute holidays</h2>
+        <div className="space-y-1.5 mb-2">
+          <input
+            type="date"
+            value={holidayDate}
+            onChange={(e) => setHolidayDate(e.target.value)}
+            className="pixel-input w-full min-w-0 max-w-full"
+          />
+          <div className="flex gap-1.5 min-w-0 w-full">
+            <input
+              value={holidayLabel}
+              onChange={(e) => setHolidayLabel(e.target.value)}
+              placeholder="Label"
+              className="pixel-input flex-1 min-w-0 w-0 max-w-full"
+            />
+            <Button
+              size="sm"
+              className="shrink-0 !px-2 !py-1"
+              disabled={!holidayDate}
+              onClick={() => {
+                addHoliday(holidayDate, holidayLabel || 'Holiday')
+                setHolidayDate('')
+                setHolidayLabel('')
+              }}
+            >
+              Add
+            </Button>
+          </div>
+        </div>
+        <div className="space-y-1">
+          {activeSemester?.holidays.map((h) => (
+            <div key={h.id} className="flex justify-between items-center gap-2 text-xs py-1 min-w-0">
+              <span className="truncate font-mono-body">
+                {h.date} — {h.label}
+              </span>
+              <button
+                type="button"
+                onClick={() => removeHoliday(h.id)}
+                className="text-[var(--color-danger)] text-[10px] shrink-0"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       <Card>
         <h2 className="font-bold mb-3">Active semester</h2>
@@ -168,31 +234,7 @@ export function SettingsPage() {
         </p>
       </Card>
 
-      <BunkernautGuide />
-
-      <Card>
-        <h2 className="font-bold mb-2">L / T / P</h2>
-        <p className="font-mono-body text-xs text-[var(--color-text-muted)]">
-          <strong>Lecture</strong>, <strong>Tutorial</strong>, <strong>Practical</strong> — set
-          credits to match your syllabus (e.g. 3 + 1 + 2). Overall % is the credit-weighted
-          average.
-        </p>
-      </Card>
-
-      <Card>
-        <h2 className="font-bold mb-3">Defaults</h2>
-        <label className="flex items-center justify-between py-2">
-          <span className="text-sm">Default threshold %</span>
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={settings.defaultThreshold}
-            onChange={(e) => updateSettings({ defaultThreshold: Number(e.target.value) })}
-            className="w-16 px-2 py-1 rounded-lg bg-[var(--color-bg-secondary)] text-sm text-right"
-          />
-        </label>
-      </Card>
+      <UserManual />
 
       <Card>
         <h2 className="font-bold mb-3">Notifications</h2>
@@ -245,50 +287,6 @@ export function SettingsPage() {
             />
           </label>
         ))}
-      </Card>
-
-      <Card>
-        <h2 className="font-bold mb-3">Institute holidays</h2>
-        <div className="flex gap-2 mb-3">
-          <input
-            type="date"
-            value={holidayDate}
-            onChange={(e) => setHolidayDate(e.target.value)}
-            className="px-2 py-1.5 rounded-lg bg-[var(--color-bg-secondary)] text-sm"
-          />
-          <input
-            value={holidayLabel}
-            onChange={(e) => setHolidayLabel(e.target.value)}
-            placeholder="Label"
-            className="flex-1 px-2 py-1.5 rounded-lg bg-[var(--color-bg-secondary)] text-sm"
-          />
-          <Button
-            size="sm"
-            disabled={!holidayDate}
-            onClick={() => {
-              addHoliday(holidayDate, holidayLabel || 'Holiday')
-              setHolidayDate('')
-              setHolidayLabel('')
-            }}
-          >
-            Add
-          </Button>
-        </div>
-        <div className="space-y-1">
-          {activeSemester?.holidays.map((h) => (
-            <div key={h.id} className="flex justify-between items-center text-sm py-1">
-              <span>
-                {h.date} — {h.label}
-              </span>
-              <button
-                onClick={() => removeHoliday(h.id)}
-                className="text-[var(--color-danger)] text-xs"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
       </Card>
 
       <Card>

@@ -215,8 +215,8 @@ export function createDemoSemester(): Semester {
     endDate: '2026-11-30',
     courses,
     entries,
+    rescheduledSessions: [],
     holidays: [{ id: generateId(), date: '2026-06-20', label: 'Institute holiday' }],
-    bunkDecisions: [],
     archived: false,
   }
 }

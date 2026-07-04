@@ -8,6 +8,7 @@ interface PixelImageProps {
   alt: string
   fallbackLabel?: string
   size?: number
+  fillContainer?: boolean
   className?: string
 }
 
@@ -25,6 +26,7 @@ export function PixelImage({
   alt,
   fallbackLabel,
   size = 32,
+  fillContainer = false,
   className,
 }: PixelImageProps) {
   const allCandidates = candidatesProp ?? (src ? buildCandidates(src) : [])
@@ -47,11 +49,11 @@ export function PixelImage({
           'font-mono-body text-[var(--color-text)]',
           className,
         )}
-        style={{
-          width: size,
-          height: size,
-          fontSize: Math.max(9, size * 0.3),
-        }}
+        style={
+          fillContainer
+            ? { maxWidth: '100%', maxHeight: '100%', width: '100%', height: '100%' }
+            : { width: size, height: size, fontSize: Math.max(9, size * 0.3) }
+        }
         title={alt}
         aria-label={alt}
       >
@@ -66,8 +68,16 @@ export function PixelImage({
       alt={alt}
       width={size}
       height={size}
-      className={clsx('pixel-art shrink-0 object-contain', className)}
-      style={{ width: size, height: size }}
+      className={clsx(
+        'pixel-art object-contain',
+        fillContainer ? 'h-full w-full max-h-full max-w-full' : 'shrink-0 max-w-full max-h-full',
+        className,
+      )}
+      style={
+        fillContainer
+          ? { maxWidth: '100%', maxHeight: '100%', width: '100%', height: '100%' }
+          : { width: size, height: size, maxWidth: '100%', maxHeight: '100%' }
+      }
       onError={handleError}
     />
   )

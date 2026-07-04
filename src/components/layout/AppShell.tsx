@@ -9,8 +9,8 @@ export function AppShell() {
   useNudges()
 
   return (
-    <div className="min-h-dvh bg-[var(--color-bg)] pb-24">
-      <main className="max-w-lg mx-auto px-4 pt-4">
+    <div className="app-shell">
+      <main className="app-main">
         <Outlet />
       </main>
       <BottomNav />

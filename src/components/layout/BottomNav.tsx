@@ -8,8 +8,8 @@ import { ICON_SIZES } from '@/assets/iconSizes'
 const tabs: { to: string; label: string; icon: NavIconKey }[] = [
   { to: '/', label: 'Home', icon: 'home' },
   { to: '/today', label: 'Today', icon: 'today' },
+  { to: '/timetable', label: 'Timetable', icon: 'timetable' },
   { to: '/courses', label: 'Courses', icon: 'courses' },
-  { to: '/stats', label: 'Stats', icon: 'stats' },
   { to: '/settings', label: 'Settings', icon: 'settings' },
 ]
 
@@ -32,7 +32,7 @@ export function BottomNav() {
             }
           >
             <PixelNavIcon icon={tab.icon} size={ICON_SIZES.nav} />
-            <span className="heading-impact text-[11px] uppercase tracking-wide truncate max-w-[64px]">
+            <span className="heading-impact text-[10px] uppercase tracking-wide truncate max-w-[56px]">
               {tab.label}
             </span>
           </NavLink>

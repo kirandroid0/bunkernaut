@@ -1,7 +1,6 @@
-/** Modal flow: bunk verdict → confirm override → log decision. */
+/** Modal flow: bunk verdict → confirm override. */
 import { useState } from 'react'
 import type { ScheduledClass } from '@/types'
-import type { BunkUserAction } from '@/types'
 import { useAppStore } from '@/store/useAppStore'
 import { computeBunkVerdict } from '@/utils/bunk'
 import { computeCourseStats, deriveCourseMascotMood } from '@/utils/calculations'
@@ -34,7 +33,6 @@ export function BunkOrNotSheet({
   onFollowBunk,
 }: BunkOrNotSheetProps) {
   const semester = useAppStore((s) => s.getActiveSemester())
-  const logBunkDecision = useAppStore((s) => s.logBunkDecision)
   const [step, setStep] = useState<Step>('verdict')
   const [acceptRisk, setAcceptRisk] = useState(false)
 
@@ -57,38 +55,15 @@ export function BunkOrNotSheet({
     onClose()
   }
 
-  const logDecision = (userAction: BunkUserAction) => {
-    logBunkDecision({
-      componentId: scheduledClass.componentId,
-      courseId: course.id,
-      courseName: course.name,
-      componentType: scheduledClass.componentType,
-      classDate: scheduledClass.date,
-      decidedAt: new Date().toISOString(),
-      appVerdict: result.verdict,
-      userAction,
-      pctBefore: result.pctBefore,
-      pctAfterProjected: result.pctAfterProjected,
-      safeMissesBefore: result.safeMissesBefore,
-    })
-  }
-
   const handleFollow = () => {
     if (result.verdict === 'bunk') {
-      logDecision('followed_bunk')
-      handleClose()
       onFollowBunk?.()
-    } else {
-      logDecision('followed_stay')
-      handleClose()
     }
+    handleClose()
   }
 
   const handleOverride = () => {
-    if (result.verdict === 'bunk') {
-      logDecision('overridden_stay')
-    } else {
-      logDecision('overridden_bunk')
+    if (result.verdict !== 'bunk') {
       onFollowBunk?.()
     }
     handleClose()

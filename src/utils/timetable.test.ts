@@ -30,8 +30,8 @@ const semester: Semester = {
     },
   ],
   entries: [],
+  rescheduledSessions: [],
   holidays: [{ id: 'h1', date: '2026-07-06', label: 'Holiday' }],
-  bunkDecisions: [],
   archived: false,
 }
 

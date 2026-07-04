@@ -4,6 +4,12 @@
  */
 import { format, startOfWeek, addDays, parseISO, isWithinInterval } from 'date-fns'
 import type { Course, Semester, ScheduledClass, AttendanceEntry } from '@/types'
+import { isAttendedStatus, isCountableStatus } from '@/utils/calculations'
+import {
+  enrichScheduledClass,
+  entriesWithRescheduled,
+  getRescheduledClassesForDate,
+} from '@/utils/rescheduled'
 import { generateId } from './id'
 
 export function formatDateISO(date: Date): string {
@@ -55,25 +61,27 @@ export function expandWeeklySlots(
         const isHoliday = isHolidayDate(semester, dateStr)
         const entry = findEntryForClass(semester.entries, component.id, dateStr)
 
-        classes.push({
-          id: `${component.id}-${dateStr}`,
-          componentId: component.id,
-          courseId: course.id,
-          courseName: course.name,
-          courseCode: course.code,
-          courseColor: course.color,
-          courseIcon: course.icon,
-          componentType: component.type,
-          date: dateStr,
-          startTime: slot.startTime,
-          durationMinutes: entry?.durationMinutes ?? slot.durationMinutes,
-          professorName: course.professorName,
-          professorContact: course.professorContact,
-          personalityNotes: course.personalityNotes,
-          entry,
-          isHoliday,
-          holidayLabel: isHoliday ? getHolidayLabel(semester, dateStr) : undefined,
-        })
+        classes.push(
+          enrichScheduledClass(semester, {
+            id: `${component.id}-${dateStr}`,
+            componentId: component.id,
+            courseId: course.id,
+            courseName: course.name,
+            courseCode: course.code,
+            courseColor: course.color,
+            courseIcon: course.icon,
+            componentType: component.type,
+            date: dateStr,
+            startTime: slot.startTime,
+            durationMinutes: entry?.durationMinutes ?? slot.durationMinutes,
+            professorName: course.professorName,
+            professorContact: course.professorContact,
+            personalityNotes: course.personalityNotes,
+            entry,
+            isHoliday,
+            holidayLabel: isHoliday ? getHolidayLabel(semester, dateStr) : undefined,
+          }),
+        )
       }
     }
   }
@@ -88,11 +96,13 @@ export function getWeekSchedule(semester: Semester, weekStart: Date): ScheduledC
   return expandWeeklySlots(semester, weekStart)
 }
 
-/** All scheduled classes on a specific calendar date. */
+/** All scheduled classes on a specific calendar date (timetable + rescheduled). */
 export function getTodayClasses(semester: Semester, date: Date): ScheduledClass[] {
   const weekStart = getWeekStart(date)
   const dateStr = formatDateISO(date)
-  return expandWeeklySlots(semester, weekStart).filter((c) => c.date === dateStr)
+  const regular = expandWeeklySlots(semester, weekStart).filter((c) => c.date === dateStr)
+  const rescheduled = getRescheduledClassesForDate(semester, dateStr)
+  return [...regular, ...rescheduled].sort((a, b) => a.startTime.localeCompare(b.startTime))
 }
 
 export function createDefaultEntry(
@@ -122,18 +132,14 @@ export function getHeatmapData(
   for (let i = 0; i < totalDays; i++) {
     const d = addDays(startDate, i)
     const dateStr = formatDateISO(d)
-    const dayEntries = semester.entries.filter(
-      (e) =>
-        e.date === dateStr &&
-        (e.status === 'Present' || e.status === 'Absent' || e.status === 'Makeup'),
+    const dayEntries = entriesWithRescheduled(semester).filter(
+      (e) => e.date === dateStr && isCountableStatus(e.status),
     )
 
     if (dayEntries.length === 0) {
       result.push({ date: dateStr, score: null })
     } else {
-      const attended = dayEntries.filter(
-        (e) => e.status === 'Present' || e.status === 'Makeup',
-      ).length
+      const attended = dayEntries.filter((e) => isAttendedStatus(e.status)).length
       result.push({ date: dateStr, score: attended / dayEntries.length })
     }
   }

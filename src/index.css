@@ -29,6 +29,33 @@ body {
   min-height: 100dvh;
 }
 
+/* App-wide margins + safe areas */
+.app-shell {
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+.app-main {
+  max-width: 28rem;
+  margin-inline: auto;
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
+}
+
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 0.5rem;
+}
+
+.page-header {
+  margin-bottom: 0.25rem;
+}
+
 .font-mono-body {
   font-family: var(--font-body);
 }

@@ -5,6 +5,7 @@ import type { DangerLevel } from '@/types'
 interface BadgeProps {
   level: DangerLevel
   label?: string
+  compact?: boolean
   className?: string
 }
 
@@ -20,11 +21,14 @@ const defaultLabels: Record<DangerLevel, string> = {
   danger: 'DANGER ZONE',
 }
 
-export function DangerBadge({ level, label, className }: BadgeProps) {
+export function DangerBadge({ level, label, compact, className }: BadgeProps) {
   return (
     <span
       className={clsx(
-        'inline-flex items-center px-2 py-0.5 text-[10px] font-mono-body font-bold uppercase tracking-wider border-2',
+        'inline-flex items-center font-mono-body font-bold uppercase border-2',
+        compact
+          ? 'px-1 py-px text-[6px] tracking-wide leading-none'
+          : 'px-2 py-0.5 text-[10px] tracking-wider',
         styles[level],
         className,
       )}

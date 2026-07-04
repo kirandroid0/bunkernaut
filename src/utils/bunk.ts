@@ -15,6 +15,7 @@ import {
   computeComponentCounts,
   getDangerLevel,
 } from './calculations'
+import { entriesWithRescheduled } from './rescheduled'
 
 /** Count Absent entries in a given calendar month. */
 export function countAbsencesInMonth(
@@ -41,7 +42,7 @@ export function computeSemesterBunkBudget(
 
   for (const course of semester.courses) {
     for (const comp of course.components) {
-      const stats = computeComponentStats(course, comp.id, semester.entries)
+      const stats = computeComponentStats(course, comp.id, entriesWithRescheduled(semester))
       if (!stats) continue
 
       if (stats.safeMisses === Infinity) {
@@ -60,7 +61,7 @@ export function computeSemesterBunkBudget(
     totalSafeMisses: hasUnlimited && totalSafeMisses === 0 ? Infinity : totalSafeMisses,
     isUnlimited: hasUnlimited && semester.courses.length > 0 && totalSafeMisses === 0,
     absencesThisMonth: countAbsencesInMonth(
-      semester.entries,
+      entriesWithRescheduled(semester),
       now.getFullYear(),
       now.getMonth(),
     ),
@@ -75,7 +76,7 @@ export function getBunkBudgetBreakdown(semester: Semester): BunkBudgetLine[] {
 
   for (const course of semester.courses) {
     for (const comp of course.components) {
-      const stats = computeComponentStats(course, comp.id, semester.entries)
+      const stats = computeComponentStats(course, comp.id, entriesWithRescheduled(semester))
       if (!stats) continue
 
       lines.push({

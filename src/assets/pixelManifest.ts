@@ -16,8 +16,8 @@ export const PIXEL_ASSETS = {
   nav: {
     home: `${BASE}/nav-home`,
     today: `${BASE}/nav-today`,
+    timetable: `${BASE}/nav-timetable`,
     courses: `${BASE}/nav-courses`,
-    stats: `${BASE}/nav-stats`,
     settings: `${BASE}/nav-settings`,
   },
 
@@ -26,7 +26,6 @@ export const PIXEL_ASSETS = {
     Absent: `${BASE}/status-absent`,
     Cancelled: `${BASE}/status-cancelled`,
     Holiday: `${BASE}/status-holiday`,
-    Makeup: `${BASE}/status-makeup`,
   } satisfies Record<AttendanceStatus, string>,
 
   empty: {
@@ -72,8 +71,8 @@ export const MASCOT_PLACEHOLDER_LABELS: Record<MascotMood, string> = {
 export const NAV_PLACEHOLDER_LABELS: Record<NavIconKey, string> = {
   home: 'H',
   today: 'T',
+  timetable: 'W',
   courses: 'C',
-  stats: 'S',
   settings: 'G',
 }
 
@@ -82,5 +81,4 @@ export const STATUS_PLACEHOLDER_LABELS: Record<AttendanceStatus, string> = {
   Absent: 'A',
   Cancelled: 'X',
   Holiday: 'H',
-  Makeup: 'M',
 }

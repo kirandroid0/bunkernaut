@@ -8,6 +8,7 @@ import clsx from 'clsx'
 interface PixelMascotProps {
   mood: MascotMood
   size?: number
+  fillContainer?: boolean
   className?: string
 }
 
@@ -18,7 +19,12 @@ const MOOD_CLASS: Record<MascotMood, string> = {
   sleepy: 'mascot-mood-sleepy',
 }
 
-export function PixelMascot({ mood, size = ICON_SIZES.mascotInline, className }: PixelMascotProps) {
+export function PixelMascot({
+  mood,
+  size = ICON_SIZES.mascotInline,
+  fillContainer = false,
+  className,
+}: PixelMascotProps) {
   return (
     <PixelImage
       key={mood}
@@ -26,6 +32,7 @@ export function PixelMascot({ mood, size = ICON_SIZES.mascotInline, className }:
       alt={`Mascot — ${mood}`}
       fallbackLabel={MASCOT_PLACEHOLDER_LABELS[mood]}
       size={size}
+      fillContainer={fillContainer}
       className={clsx(MOOD_CLASS[mood], className)}
     />
   )

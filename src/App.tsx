@@ -1,10 +1,10 @@
 /** Top-level route definitions — all pages render inside AppShell. */
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { DashboardPage } from '@/pages/DashboardPage'
-import { TodayPage } from '@/pages/TodayPage'
+import { MarkPage } from '@/pages/MarkPage'
 import { CoursesPage } from '@/pages/CoursesPage'
-import { StatsPage } from '@/pages/StatsPage'
+import { TimetablePage } from '@/pages/TimetablePage'
 import { SettingsPage } from '@/pages/SettingsPage'
 
 export function App() {
@@ -13,9 +13,10 @@ export function App() {
       <Routes>
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
-          <Route path="today" element={<TodayPage />} />
+          <Route path="today" element={<MarkPage />} />
+          <Route path="mark" element={<Navigate to="/today" replace />} />
           <Route path="courses" element={<CoursesPage />} />
-          <Route path="stats" element={<StatsPage />} />
+          <Route path="timetable" element={<TimetablePage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>

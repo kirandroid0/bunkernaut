@@ -1,4 +1,4 @@
-/** Home screen: today's classes, Bunkernaut cards, and nudge banners. */
+/** Home screen: today's classes + 2-column Bunkernaut grid. */
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { useAttendanceStats } from '@/hooks/useAttendanceStats'
@@ -12,7 +12,6 @@ import { EmptyState } from '@/components/pixel/EmptyState'
 import { Button } from '@/components/ui/Button'
 import { DailyLogList } from '@/components/timetable/DailyLogList'
 import { BunkernautCard } from '@/components/bunk/BunkernautCard'
-import { BunkOrNotSheet } from '@/components/bunk/BunkOrNotSheet'
 import { NudgeBanner } from '@/components/nudges/NudgeBanner'
 import { useState } from 'react'
 import type { ScheduledClass } from '@/types'
@@ -26,26 +25,19 @@ export function DashboardPage() {
   const markedToday = todayClasses.filter((c) => c.entry).length
   const [selectedClass, setSelectedClass] = useState<ScheduledClass | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
-  const [bunkClass, setBunkClass] = useState<ScheduledClass | null>(null)
-  const [bunkSheetOpen, setBunkSheetOpen] = useState(false)
 
   const openMarkSheet = (cls: ScheduledClass) => {
     setSelectedClass(cls)
     setSheetOpen(true)
   }
 
-  const openBunkSheet = (cls: ScheduledClass) => {
-    setBunkClass(cls)
-    setBunkSheetOpen(true)
-  }
-
   return (
-    <div className="space-y-5 pb-4">
-      <header className="flex items-center justify-between gap-2">
+    <div className="page-stack">
+      <header className="flex items-start justify-between gap-2">
         <div>
-          <h1 className="heading-impact text-2xl sm:text-3xl text-[var(--color-text)]">Bunkernaut</h1>
-          <p className="font-mono-body text-xs text-[var(--color-text-muted)] mt-1 uppercase tracking-wide">
-            {format(new Date(), 'EEEE, MMM d')}
+          <h1 className="heading-impact text-xl text-[var(--color-text)]">Bunkernaut</h1>
+          <p className="font-mono-body text-[10px] text-[var(--color-text-muted)] mt-0.5 uppercase tracking-wide">
+            {format(new Date(), 'EEE, MMM d')}
           </p>
         </div>
         <ThemeToggle />
@@ -61,45 +53,41 @@ export function DashboardPage() {
       )}
 
       <Card padding="sm">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="heading-impact text-lg text-[var(--color-text)]">Mark attendance</h2>
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="heading-impact text-sm text-[var(--color-text)]">Mark</h2>
           <Link
             to="/today"
-            className="font-mono-body text-xs text-[var(--color-text-muted)] uppercase tracking-wide hover:text-[var(--color-text)]"
+            className="font-mono-body text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
           >
-            Other days
+            Other days →
           </Link>
         </div>
         {todayClasses.length === 0 ? (
-          <p className="font-mono-body text-sm text-[var(--color-text-muted)]">
-            No classes today
-          </p>
+          <p className="font-mono-body text-[11px] text-[var(--color-text-muted)]">No classes today</p>
         ) : (
           <>
-            <p className="font-mono-body text-xs text-[var(--color-text-muted)] mb-3 uppercase">
-              {markedToday}/{todayClasses.length} marked today
+            <p className="font-mono-body text-[10px] text-[var(--color-text-muted)] mb-2">
+              {markedToday}/{todayClasses.length} done
             </p>
-            <DailyLogList
-              classes={todayClasses}
-              onSelect={openMarkSheet}
-              onBunkOrNot={openBunkSheet}
-            />
+            <DailyLogList classes={todayClasses} onMark={openMarkSheet} compact />
           </>
         )}
       </Card>
 
       {courseStats.length > 0 ? (
-        <section className="space-y-3">
-          <h2 className="heading-impact text-lg text-[var(--color-text)]">Bunkernauts</h2>
-          {courseStats.map((stats) => (
-            <BunkernautCard key={stats.courseId} stats={stats} />
-          ))}
+        <section>
+          <h2 className="heading-impact text-sm text-[var(--color-text)] mb-2">Your Bunkernauts</h2>
+          <div className="grid grid-cols-2 gap-2.5 items-stretch">
+            {courseStats.map((stats) => (
+              <BunkernautCard key={stats.courseId} stats={stats} />
+            ))}
+          </div>
         </section>
       ) : (
         <EmptyState
           variant="courses"
           title="No courses yet"
-          message="Add a course to start tracking~"
+          message="Add a course to start~"
           action={
             <Link to="/courses">
               <Button>Add course</Button>
@@ -114,18 +102,6 @@ export function DashboardPage() {
         onClose={() => {
           setSheetOpen(false)
           setSelectedClass(null)
-        }}
-      />
-
-      <BunkOrNotSheet
-        scheduledClass={bunkClass}
-        open={bunkSheetOpen}
-        onClose={() => {
-          setBunkSheetOpen(false)
-          setBunkClass(null)
-        }}
-        onFollowBunk={() => {
-          if (bunkClass) openMarkSheet(bunkClass)
         }}
       />
     </div>

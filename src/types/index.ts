@@ -6,7 +6,21 @@ export type AttendanceStatus =
   | 'Absent'
   | 'Cancelled'
   | 'Holiday'
-  | 'Makeup'
+
+/** Present/absent mark for a class moved to a new date after cancellation. */
+export type RescheduledStatus = 'Present' | 'Absent'
+
+export interface RescheduledSession {
+  id: string
+  componentId: string
+  /** Original timetable date that was cancelled. */
+  originalDate: string
+  rescheduledDate: string
+  startTime: string
+  durationMinutes: number
+  status?: RescheduledStatus
+  profMood?: ProfMood
+}
 
 export type ProfMood = 'good' | 'neutral' | 'grumpy'
 
@@ -64,8 +78,9 @@ export interface Semester {
   endDate: string
   courses: Course[]
   entries: AttendanceEntry[]
+  /** One-off classes moved after cancellation — optional for older saved data. */
+  rescheduledSessions?: RescheduledSession[]
   holidays: Holiday[]
-  bunkDecisions: import('./bunk').BunkDecision[]
   archived: boolean
 }
 
@@ -100,6 +115,7 @@ export interface ComponentStats {
 export interface CourseStats {
   courseId: string
   courseName: string
+  courseCode: string
   icon: string
   color: string
   percentage: number
@@ -128,6 +144,12 @@ export interface ScheduledClass {
   entry?: AttendanceEntry
   isHoliday: boolean
   holidayLabel?: string
+  /** One-off class moved from originalDate after cancellation. */
+  isRescheduled?: boolean
+  originalDate?: string
+  rescheduledSessionId?: string
+  /** Set on the cancelled original when a reschedule exists. */
+  rescheduledToDate?: string
 }
 
 export interface AppState {
@@ -152,4 +174,4 @@ export const COURSE_COLORS = [
   '#EFF1ED',
 ]
 
-export type { BunkDecision, BunkUserAction, BunkVerdict } from './bunk'
+export type { BunkVerdict } from './bunk'

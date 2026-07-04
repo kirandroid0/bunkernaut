@@ -46,6 +46,6 @@ export function feedbackOnMark(
 ) {
   if (settings.hapticsEnabled) triggerHaptic()
   if (!settings.soundsEnabled) return
-  if (status === 'Present' || status === 'Makeup') playMarkSound('present')
+  if (status === 'Present') playMarkSound('present')
   if (status === 'Absent') playMarkSound('absent')
 }

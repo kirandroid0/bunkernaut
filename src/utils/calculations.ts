@@ -1,22 +1,23 @@
 /**
  * Core attendance math for Bunkernaut.
  *
- * Percentages count only Present, Absent, and Makeup entries.
+ * Percentages count only Present and Absent entries.
  * Cancelled and Holiday entries are excluded from totals.
  *
  * Course-level % is a credit-weighted average of graded L/T/P components
  * (e.g. L×3 + T×1 + P×2, divided by total credits).
  */
 import type { AttendanceEntry, AttendanceStatus, Course, Semester } from '@/types'
+import { entriesWithRescheduled } from '@/utils/rescheduled'
 
 /** Whether this status counts toward attendance totals (numerator and denominator). */
 export function isCountableStatus(status: AttendanceStatus): boolean {
-  return status === 'Present' || status === 'Absent' || status === 'Makeup'
+  return status === 'Present' || status === 'Absent'
 }
 
-/** Whether this status counts as attended (numerator only). Makeup counts as present. */
+/** Whether this status counts as attended (numerator only). */
 export function isAttendedStatus(status: AttendanceStatus): boolean {
-  return status === 'Present' || status === 'Makeup'
+  return status === 'Present'
 }
 
 /** All attendance entries for a single L/T/P component. */
@@ -165,6 +166,7 @@ export function computeCourseStats(course: Course, entries: AttendanceEntry[]) {
     return {
       courseId: course.id,
       courseName: course.name,
+      courseCode: course.code,
       icon: course.icon,
       color: course.color,
       percentage: 100,
@@ -185,6 +187,7 @@ export function computeCourseStats(course: Course, entries: AttendanceEntry[]) {
   return {
     courseId: course.id,
     courseName: course.name,
+    courseCode: course.code,
     icon: course.icon,
     color: course.color,
     percentage: weightedPct,
@@ -203,7 +206,7 @@ export function computeSemesterGPA(semester: Semester): number {
       course.components.map((c) => ({ ...c, graded: isGraded(c) })),
     )
     return comps.map((c) => {
-      const entries = filterComponentEntries(semester.entries, c.id)
+      const entries = filterComponentEntries(entriesWithRescheduled(semester), c.id)
       const { attended, total } = computeComponentCounts(entries)
       return { pct: computePercentage(attended, total), credits: c.credits }
     })
@@ -232,7 +235,9 @@ export function deriveCourseMascotMood(
 
 /** Worst mood across all courses — the frog reflects your weakest link. */
 export function deriveMascotMood(semester: Semester): import('@/types').MascotMood {
-  const courseStats = semester.courses.map((c) => computeCourseStats(c, semester.entries))
+  const courseStats = semester.courses.map((c) =>
+    computeCourseStats(c, entriesWithRescheduled(semester)),
+  )
 
   if (courseStats.length === 0) return 'happy'
 
@@ -266,12 +271,13 @@ export function getTrendData(
   semester: Semester,
   mode: 'weekly' | 'monthly',
 ): { label: string; percentage: number }[] {
-  const dates = [...new Set(semester.entries.map((e) => e.date))].sort()
+  const allEntries = entriesWithRescheduled(semester)
+  const dates = [...new Set(allEntries.map((e) => e.date))].sort()
   if (dates.length === 0) return []
 
   const buckets = new Map<string, { attended: number; total: number }>()
 
-  for (const entry of semester.entries) {
+  for (const entry of allEntries) {
     if (!isCountableStatus(entry.status)) continue
     const d = new Date(entry.date + 'T00:00:00')
     const key =

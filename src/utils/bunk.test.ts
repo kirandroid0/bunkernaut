@@ -31,7 +31,6 @@ function makeSemester(entries: Semester['entries']): Semester {
     courses: [mockCourse],
     entries,
     holidays: [],
-    bunkDecisions: [],
     archived: false,
   }
 }

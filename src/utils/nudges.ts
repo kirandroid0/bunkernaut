@@ -4,6 +4,7 @@ import type { Semester } from '@/types'
 import { COMPONENT_TYPE_LABELS } from '@/types'
 import { BUNKS_AVAILABLE, formatBunksAvailable } from '@/utils/bunkLabels'
 import { computeComponentStats } from './calculations'
+import { entriesWithRescheduled } from './rescheduled'
 import { getTodayClasses } from './timetable'
 
 export type NudgeType = 'eod_unmarked' | 'tomorrow_threshold'
@@ -34,7 +35,12 @@ export function getActiveNudges(
 
   if (hour >= 18 && settings.lastEodNudgeDate !== todayStr) {
     const todayClasses = getTodayClasses(semester, now)
-    const unmarked = todayClasses.filter((c) => !c.entry && !c.isHoliday)
+    const unmarked = todayClasses.filter((c) => {
+      if (c.isHoliday) return false
+      if (c.entry?.status === 'Cancelled') return false
+      if (c.isRescheduled) return !c.entry
+      return !c.entry
+    })
     if (unmarked.length > 0) {
       const id = `eod-${todayStr}`
       if (!settings.dismissedNudgeIds.includes(id)) {
@@ -58,7 +64,7 @@ export function getActiveNudges(
     for (const cls of tomorrowClasses) {
       const course = semester.courses.find((c) => c.id === cls.courseId)
       if (!course) continue
-      const stats = computeComponentStats(course, cls.componentId, semester.entries)
+      const stats = computeComponentStats(course, cls.componentId, entriesWithRescheduled(semester))
       if (!stats) continue
 
       if (
