@@ -83,13 +83,22 @@ export function SettingsPage() {
 
   return (
     <div className="page-stack">
-      <header className="page-header flex items-center justify-between">
-        <div>
-          <h1 className="heading-impact text-xl text-[var(--color-text)]">Settings</h1>
-          <p className="font-mono-body text-[10px] text-[var(--color-text-muted)] mt-0.5">Prefs & data</p>
-        </div>
-        <ThemeToggle />
+      <header className="page-header">
+        <h1 className="heading-impact text-xl text-[var(--color-text)]">Settings</h1>
+        <p className="font-mono-body text-[10px] text-[var(--color-text-muted)] mt-0.5">Prefs & data</p>
       </header>
+
+      <Card padding="sm">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="heading-impact text-sm text-[var(--color-text)]">Theme</h2>
+            <p className="font-mono-body text-[10px] text-[var(--color-text-muted)] mt-0.5">
+              {settings.theme === 'light' ? 'Light mode' : 'Dark mode'}
+            </p>
+          </div>
+          <ThemeToggle compact />
+        </div>
+      </Card>
 
       <Card>
         <h2 className="heading-impact text-sm mb-2">Default threshold</h2>
@@ -266,27 +275,6 @@ export function SettingsPage() {
               Notifications blocked in browser settings — enable them there to use push reminders.
             </p>
           )}
-      </Card>
-
-      <Card>
-        <h2 className="font-bold mb-3">Delight toggles</h2>
-        {(
-          [
-            ['soundsEnabled', 'Sound effects'],
-            ['animationsEnabled', 'Animations & confetti'],
-            ['hapticsEnabled', 'Haptic feedback'],
-          ] as const
-        ).map(([key, label]) => (
-          <label key={key} className="flex items-center justify-between py-2">
-            <span className="text-sm">{label}</span>
-            <input
-              type="checkbox"
-              checked={settings[key]}
-              onChange={(e) => updateSettings({ [key]: e.target.checked })}
-              className="w-5 h-5 accent-[var(--color-accent)]"
-            />
-          </label>
-        ))}
       </Card>
 
       <Card>

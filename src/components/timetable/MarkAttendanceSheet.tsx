@@ -1,17 +1,13 @@
 /** Modal for marking Present/Absent/Cancelled/Holiday on a class. */
 import { useState, useEffect, useMemo } from 'react'
 import { format, parseISO } from 'date-fns'
-import { motion } from 'framer-motion'
-import type { AttendanceStatus, ProfMood, RescheduledStatus, ScheduledClass } from '@/types'
+import type { AttendanceStatus, RescheduledStatus, ScheduledClass } from '@/types'
 import { COMPONENT_TYPE_LABELS } from '@/types'
 import { useAppStore } from '@/store/useAppStore'
-import { feedbackOnMark } from '@/utils/feedback'
 import { findRescheduledSession, getRescheduledClassesForDate } from '@/utils/rescheduled'
 import { getTodayClasses } from '@/utils/timetable'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
-import { ProfMoodPicker } from '@/components/professor/ProfMoodPicker'
-import { SparkleBurst } from '@/components/mascot/SparkleBurst'
 import { PixelStatusIcon } from '@/components/pixel/PixelStatusIcon'
 import { ICON_SIZES } from '@/assets/iconSizes'
 import clsx from 'clsx'
@@ -50,17 +46,12 @@ export function MarkAttendanceSheet({
   const upsertRescheduledSession = useAppStore((s) => s.upsertRescheduledSession)
   const markRescheduledSession = useAppStore((s) => s.markRescheduledSession)
   const removeRescheduledSession = useAppStore((s) => s.removeRescheduledSession)
-  const settings = useAppStore((s) => s.settings)
 
   const [step, setStep] = useState<Step>('main')
   const [duration, setDuration] = useState(60)
-  const [profMood, setProfMood] = useState<ProfMood | undefined>()
   const [rescheduledDate, setRescheduledDate] = useState('')
   const [rescheduledTime, setRescheduledTime] = useState('09:00')
-  const [showSparkle, setShowSparkle] = useState(false)
-  const [shake, setShake] = useState(false)
 
-  /** Fresh class row from store — parent keeps a stale snapshot from when the sheet opened. */
   const activeClass = useMemo(() => {
     if (!scheduledClass || !semester || !open) return scheduledClass
 
@@ -79,7 +70,6 @@ export function MarkAttendanceSheet({
     )
   }, [scheduledClass, semester, open])
 
-  // Init step only when the sheet opens or a different class is selected — not on store updates.
   useEffect(() => {
     if (!open) {
       setStep('main')
@@ -91,7 +81,6 @@ export function MarkAttendanceSheet({
     if (!sem) return
 
     setDuration(scheduledClass.durationMinutes)
-    setProfMood(scheduledClass.entry?.profMood)
     setRescheduledTime(scheduledClass.startTime)
     setRescheduledDate(scheduledClass.date)
 
@@ -129,47 +118,16 @@ export function MarkAttendanceSheet({
 
   if (!scheduledClass || !activeClass) return null
 
-  const finishClose = (delay = 200) => {
-    setTimeout(onClose, delay)
-  }
-
-  const runFeedback = (status: AttendanceStatus | RescheduledStatus) => {
-    feedbackOnMark(status, settings)
-    if (!settings.animationsEnabled) return
-    if (status === 'Present') {
-      setShowSparkle(true)
-      setTimeout(() => setShowSparkle(false), 800)
-    }
-    if (status === 'Absent') {
-      setShake(true)
-      setTimeout(() => setShake(false), 500)
-    }
-  }
-
   const handleMark = (status: AttendanceStatus) => {
     if (status === 'Cancelled') {
-      upsertAttendance(
-        activeClass.componentId,
-        activeClass.date,
-        status,
-        duration,
-        profMood,
-      )
-      runFeedback(status)
+      upsertAttendance(activeClass.componentId, activeClass.date, status, duration)
       setStep('cancelled-prompt')
       return
     }
 
-    upsertAttendance(
-      activeClass.componentId,
-      activeClass.date,
-      status,
-      duration,
-      profMood,
-    )
-    runFeedback(status)
+    upsertAttendance(activeClass.componentId, activeClass.date, status, duration)
     onMarked?.(status)
-    finishClose(status === 'Present' && settings.animationsEnabled ? 600 : 200)
+    onClose()
   }
 
   const handleRescheduleMark = (status: RescheduledStatus) => {
@@ -185,10 +143,9 @@ export function MarkAttendanceSheet({
 
     if (!sessionId) return
 
-    markRescheduledSession(sessionId, status, duration, profMood)
-    runFeedback(status)
+    markRescheduledSession(sessionId, status, duration)
     onMarked?.(status)
-    finishClose(status === 'Present' && settings.animationsEnabled ? 600 : 200)
+    onClose()
   }
 
   const saveRescheduleDetails = () => {
@@ -258,9 +215,7 @@ export function MarkAttendanceSheet({
               : 'Mark attendance'
       }
     >
-      <motion.div animate={shake ? { x: [-4, 4, -4, 4, 0] } : {}} className="relative">
-        {showSparkle && settings.animationsEnabled && <SparkleBurst />}
-
+      <div>
         {step === 'main' && (
           <>
             {classHeader}
@@ -285,8 +240,6 @@ export function MarkAttendanceSheet({
                 className="pixel-input mt-1"
               />
             </label>
-
-            <ProfMoodPicker value={profMood} onChange={setProfMood} />
 
             <div className="flex flex-col gap-2 mt-5">
               {STATUSES.map(({ status, label, menuClass }) => (
@@ -333,7 +286,7 @@ export function MarkAttendanceSheet({
                 onClick={() => {
                   removeRescheduledSession(activeClass.componentId, activeClass.date)
                   onMarked?.('Cancelled')
-                  finishClose()
+                  onClose()
                 }}
               >
                 No — just cancelled
@@ -416,8 +369,6 @@ export function MarkAttendanceSheet({
               />
             </label>
 
-            <ProfMoodPicker value={profMood} onChange={setProfMood} />
-
             <div className="flex flex-col gap-2 mt-5">
               {RESCHEDULED_STATUSES.map(({ status, label, menuClass }) => (
                 <button
@@ -433,13 +384,13 @@ export function MarkAttendanceSheet({
             </div>
 
             {!activeClass.isRescheduled && (
-              <Button variant="ghost" className="w-full mt-3" onClick={() => finishClose()}>
+              <Button variant="ghost" className="w-full mt-3" onClick={() => onClose()}>
                 Mark later
               </Button>
             )}
           </>
         )}
-      </motion.div>
+      </div>
     </Modal>
   )
 }

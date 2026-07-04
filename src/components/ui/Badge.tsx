@@ -27,7 +27,7 @@ export function DangerBadge({ level, label, compact, className }: BadgeProps) {
       className={clsx(
         'inline-flex items-center font-mono-body font-bold uppercase border-2',
         compact
-          ? 'px-1 py-px text-[6px] tracking-wide leading-none'
+          ? 'px-1.5 py-0.5 text-[7px] tracking-wide leading-none'
           : 'px-2 py-0.5 text-[10px] tracking-wider',
         styles[level],
         className,

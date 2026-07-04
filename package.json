@@ -6,15 +6,22 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:android": "tsc -b && vite build --mode capacitor && cap sync android",
+    "android:open": "cap open android",
+    "android:icons": "capacitor-assets generate --android --iconBackgroundColor \"#EFF1ED\" --splashBackgroundColor \"#EFF1ED\"",
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.2",
+    "@fontsource/roboto-mono": "^5.2.9",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
-    "framer-motion": "^12.42.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.18.1",
@@ -22,6 +29,8 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.4.1",
     "@tailwindcss/vite": "^4.3.2",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^24.13.2",

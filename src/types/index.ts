@@ -19,10 +19,7 @@ export interface RescheduledSession {
   startTime: string
   durationMinutes: number
   status?: RescheduledStatus
-  profMood?: ProfMood
 }
-
-export type ProfMood = 'good' | 'neutral' | 'grumpy'
 
 export type MascotMood = 'sparkly' | 'happy' | 'nervous' | 'sleepy'
 
@@ -62,7 +59,6 @@ export interface AttendanceEntry {
   date: string
   status: AttendanceStatus
   durationMinutes: number
-  profMood?: ProfMood
 }
 
 export interface Holiday {
@@ -86,9 +82,6 @@ export interface Semester {
 
 export interface AppSettings {
   defaultThreshold: number
-  soundsEnabled: boolean
-  animationsEnabled: boolean
-  hapticsEnabled: boolean
   theme: 'light' | 'dark'
   notificationsEnabled: boolean
   lastEodNudgeDate?: string

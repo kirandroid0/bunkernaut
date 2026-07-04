@@ -70,12 +70,12 @@ export function PixelImage({
       height={size}
       className={clsx(
         'pixel-art object-contain',
-        fillContainer ? 'h-full w-full max-h-full max-w-full' : 'shrink-0 max-w-full max-h-full',
+        fillContainer ? 'block h-full w-full max-h-full max-w-full' : 'shrink-0 max-w-full max-h-full',
         className,
       )}
       style={
         fillContainer
-          ? { maxWidth: '100%', maxHeight: '100%', width: '100%', height: '100%' }
+          ? { width: '100%', height: '100%' }
           : { width: size, height: size, maxWidth: '100%', maxHeight: '100%' }
       }
       onError={handleError}

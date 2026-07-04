@@ -10,7 +10,6 @@ import type {
   AttendanceStatus,
   Course,
   Holiday,
-  ProfMood,
   RescheduledSession,
   RescheduledStatus,
   Semester,
@@ -21,9 +20,6 @@ import { createDemoSemester } from '@/utils/demoData'
 
 const defaultSettings: AppSettings = {
   defaultThreshold: 75,
-  soundsEnabled: true,
-  animationsEnabled: true,
-  hapticsEnabled: true,
   theme: 'light',
   notificationsEnabled: false,
   dismissedNudgeIds: [],
@@ -73,22 +69,19 @@ interface AppStore {
     date: string,
     status: AttendanceStatus,
     durationMinutes: number,
-    profMood?: ProfMood,
   ) => void
   deleteAttendance: (entryId: string) => void
 
   upsertRescheduledSession: (
-    session: Omit<RescheduledSession, 'id' | 'status' | 'profMood'> & {
+    session: Omit<RescheduledSession, 'id' | 'status'> & {
       id?: string
       status?: RescheduledStatus
-      profMood?: ProfMood
     },
   ) => void
   markRescheduledSession: (
     sessionId: string,
     status: RescheduledStatus,
     durationMinutes: number,
-    profMood?: ProfMood,
   ) => void
   removeRescheduledSession: (componentId: string, originalDate: string) => void
 
@@ -207,7 +200,7 @@ export const useAppStore = create<AppStore>()(
         }))
       },
 
-      upsertAttendance: (componentId, date, status, durationMinutes, profMood) => {
+      upsertAttendance: (componentId, date, status, durationMinutes) => {
         set((state) => ({
           semesters: state.semesters.map((s) => {
             let rescheduledSessions = s.rescheduledSessions ?? []
@@ -225,9 +218,7 @@ export const useAppStore = create<AppStore>()(
                 ...s,
                 rescheduledSessions,
                 entries: s.entries.map((e) =>
-                  e.id === existing.id
-                    ? { ...e, status, durationMinutes, profMood }
-                    : e,
+                  e.id === existing.id ? { ...e, status, durationMinutes } : e,
                 ),
               }
             }
@@ -237,7 +228,6 @@ export const useAppStore = create<AppStore>()(
               date,
               status,
               durationMinutes,
-              profMood,
             }
             return {
               ...s,
@@ -276,7 +266,6 @@ export const useAppStore = create<AppStore>()(
                         ...sessionData,
                         id: existing.id,
                         status: sessionData.status ?? r.status,
-                        profMood: sessionData.profMood ?? r.profMood,
                       }
                     : r,
                 ),
@@ -290,21 +279,18 @@ export const useAppStore = create<AppStore>()(
               startTime: sessionData.startTime,
               durationMinutes: sessionData.durationMinutes,
               status: sessionData.status,
-              profMood: sessionData.profMood,
             }
             return { ...s, rescheduledSessions: [...sessions, session] }
           }),
         }))
       },
 
-      markRescheduledSession: (sessionId, status, durationMinutes, profMood) => {
+      markRescheduledSession: (sessionId, status, durationMinutes) => {
         set((state) => ({
           semesters: state.semesters.map((s) => ({
             ...s,
             rescheduledSessions: (s.rescheduledSessions ?? []).map((r) =>
-              r.id === sessionId
-                ? { ...r, status, durationMinutes, profMood }
-                : r,
+              r.id === sessionId ? { ...r, status, durationMinutes } : r,
             ),
           })),
         }))

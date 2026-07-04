@@ -1,19 +1,19 @@
-/** Per-course frog card — max mascot, text footer in green zone, 2-col grid. */
+/** Per-course frog card — fixed layout: mascot, footer, 3-row LTP strip. */
 import { Card } from '@/components/ui/Card'
 import { DangerBadge } from '@/components/ui/Badge'
 import { PixelMascot } from '@/components/pixel/PixelMascot'
 import { ICON_SIZES } from '@/assets/iconSizes'
 import type { CourseStats } from '@/types'
+import { COMPONENT_TYPE_LABELS } from '@/types'
 import { deriveCourseMascotMood } from '@/utils/calculations'
-import {
-  BUNKS_AVAILABLE,
-  formatBunksAvailable,
-  formatLtpChip,
-} from '@/utils/bunkLabels'
+import { BUNKS_AVAILABLE, formatBunksAvailable } from '@/utils/bunkLabels'
 import clsx from 'clsx'
 
 const LTP_SLOTS = 3
-const LTP_ROW_H = 'h-[15px]'
+const LTP_ROW_H = 'h-[12px]'
+const HERO_H = 215
+const FOOTER_H = 56
+const BOTTOM_H = 50
 
 interface BunkernautCardProps {
   stats: CourseStats
@@ -29,37 +29,47 @@ export function BunkernautCard({ stats, onClick }: BunkernautCardProps) {
       : formatBunksAvailable(stats.safeMisses)
 
   const ltpRows = stats.components.slice(0, LTP_SLOTS)
-  const ltpPad = Math.max(0, LTP_SLOTS - ltpRows.length)
 
   return (
     <Card
       className={clsx(
-        '!p-0 overflow-hidden h-full flex flex-col min-w-0',
+        '!p-0 overflow-hidden flex flex-col min-w-0',
         onClick && 'cursor-pointer hover:translate-x-px hover:translate-y-px transition-transform',
       )}
+      style={{ height: HERO_H + BOTTOM_H }}
       onClick={onClick}
     >
-      <div className="hero-panel !border-0 !shadow-none h-[272px] shrink-0 grid grid-rows-[1fr_auto] min-w-0">
-        <div className="min-h-0 w-full flex items-end justify-center overflow-hidden px-0.5 pt-1">
+      <div
+        className="hero-panel !border-0 !shadow-none flex flex-col shrink-0 overflow-hidden"
+        style={{ height: HERO_H }}
+      >
+        <div
+          className="w-full overflow-hidden flex items-end justify-center"
+          style={{ height: HERO_H - FOOTER_H }}
+        >
           <PixelMascot
             mood={mood}
             size={ICON_SIZES.mascotGridLg}
             fillContainer
-            className="object-contain object-bottom"
+            className="h-full w-full object-contain object-bottom"
           />
         </div>
 
-        <footer className="shrink-0 w-full px-1.5 pt-1 pb-2 text-center leading-normal">
+        <footer
+          className="shrink-0 w-full px-1.5 py-1 flex flex-col justify-center text-center leading-tight overflow-hidden"
+          style={{ height: FOOTER_H }}
+        >
           <p
-            className="font-mono-body text-[7px] text-[var(--color-text)] truncate"
+            className="heading-impact text-[10px] uppercase text-[var(--color-text)] line-clamp-2 leading-tight break-words"
             title={stats.courseName}
           >
             {stats.courseName}
           </p>
-          <div className="mt-0.5 flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 min-w-0">
-            <p className="font-mono-body text-[7px] text-[var(--color-text-muted)] shrink-0">
-              {stats.courseCode} · {stats.percentage}%
-            </p>
+          <p className="font-mono-body text-[9px] text-[var(--color-text-muted)] truncate mt-0.5">
+            {stats.courseCode} ·{' '}
+            <span className="font-bold text-[var(--color-text)]">{stats.percentage}%</span>
+          </p>
+          <div className="flex justify-center mt-0.5">
             <DangerBadge
               compact
               level={stats.dangerLevel}
@@ -69,34 +79,39 @@ export function BunkernautCard({ stats, onClick }: BunkernautCardProps) {
         </footer>
       </div>
 
-      <div className="h-[76px] shrink-0 px-1.5 py-1 bg-[var(--color-surface)] flex gap-1 items-stretch min-w-0">
-        <div className="flex-1 min-w-0 flex flex-col justify-center gap-px">
-          {ltpRows.map((comp) => (
-            <div
-              key={comp.componentId}
-              className={clsx(
-                LTP_ROW_H,
-                'font-mono-body text-[6.5px] leading-none px-0.5 flex items-center border border-[var(--color-border)] bg-[var(--color-bg)] truncate',
-                !comp.graded && 'opacity-50',
-              )}
-            >
-              {formatLtpChip(comp.type, comp.percentage, comp.missed)}
-            </div>
-          ))}
-          {Array.from({ length: ltpPad }, (_, i) => (
-            <div key={`pad-${i}`} className={LTP_ROW_H} aria-hidden />
-          ))}
+      <div
+        className="shrink-0 px-2 py-1.5 bg-[var(--color-surface)] flex gap-2 items-stretch min-w-0"
+        style={{ height: BOTTOM_H }}
+      >
+        <div className="flex-1 min-w-0 flex flex-col justify-evenly">
+          {Array.from({ length: LTP_SLOTS }, (_, i) => {
+            const comp = ltpRows[i]
+            if (!comp) {
+              return <div key={`pad-${i}`} className={LTP_ROW_H} aria-hidden />
+            }
+            return (
+              <p
+                key={comp.componentId}
+                className={clsx(
+                  'font-mono-body text-[7px] leading-none text-[var(--color-text-muted)] truncate',
+                  !comp.graded && 'opacity-40',
+                )}
+              >
+                {COMPONENT_TYPE_LABELS[comp.type]} · {comp.percentage}% · {comp.missed} abs
+              </p>
+            )
+          })}
         </div>
 
-        <div className="w-[40px] shrink-0 flex flex-col items-center justify-center text-center border-l border-[var(--color-border)]/40 pl-0.5">
+        <div className="w-[34px] shrink-0 flex flex-col items-center justify-center text-center">
           {belowThreshold ? (
-            <p className="font-mono-body text-[5.5px] text-[var(--color-text)] leading-tight">
+            <p className="font-mono-body text-[6px] text-[var(--color-text)] leading-tight">
               Contact prof
             </p>
           ) : (
             <>
-              <p className="stat-number text-base leading-none">{bunks}</p>
-              <p className="font-mono-body text-[4.5px] uppercase text-[var(--color-text-muted)] tracking-wide leading-tight">
+              <p className="stat-number text-sm leading-none">{bunks}</p>
+              <p className="font-mono-body text-[5px] uppercase text-[var(--color-text-muted)] tracking-wide leading-tight mt-px">
                 {BUNKS_AVAILABLE}
               </p>
             </>

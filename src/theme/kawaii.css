@@ -17,7 +17,7 @@
   --radius-button: 0;
   --shadow-soft: 4px 4px 0 #373d20;
   --shadow-card: 4px 4px 0 #373d20;
-  --font-heading: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  --font-heading: Impact, Haettenschweiler, 'Arial Narrow Bold', 'Roboto Mono', ui-monospace, monospace;
   --font-body: 'Roboto Mono', ui-monospace, monospace;
 }
 

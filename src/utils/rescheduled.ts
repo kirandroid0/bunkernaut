@@ -37,7 +37,6 @@ export function entriesWithRescheduled(semester: Semester): AttendanceEntry[] {
       date: s.rescheduledDate,
       status: s.status,
       durationMinutes: s.durationMinutes,
-      profMood: s.profMood,
     }))
 
   return [...semester.entries, ...extra]
@@ -59,7 +58,6 @@ export function scheduledClassFromRescheduled(
           date: session.rescheduledDate,
           status: session.status,
           durationMinutes: session.durationMinutes,
-          profMood: session.profMood,
         }
       : undefined
 

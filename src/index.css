@@ -3,7 +3,7 @@
 
 @theme {
   --font-sans: 'Roboto Mono', ui-monospace, monospace;
-  --font-heading: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  --font-heading: Impact, Haettenschweiler, 'Arial Narrow Bold', 'Roboto Mono', ui-monospace, monospace;
 }
 
 * {
@@ -62,7 +62,7 @@ body {
 
 .heading-impact {
   font-family: var(--font-heading);
-  font-weight: 400;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   line-height: 1.15;
@@ -70,7 +70,7 @@ body {
 
 .stat-number {
   font-family: var(--font-heading);
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1;
 }

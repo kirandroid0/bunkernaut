@@ -20,15 +20,7 @@ export function importFromJSON(json: string): AppState {
 }
 
 export function exportToCSV(semester: Semester): string {
-  const headers = [
-    'Date',
-    'Course',
-    'Code',
-    'Component',
-    'Status',
-    'Duration (min)',
-    'Prof Mood',
-  ]
+  const headers = ['Date', 'Course', 'Code', 'Component', 'Status', 'Duration (min)']
 
   const rows = semester.entries.map((entry) => {
     const course = semester.courses.find((c) =>
@@ -43,7 +35,6 @@ export function exportToCSV(semester: Semester): string {
       component?.type ?? '',
       entry.status,
       String(entry.durationMinutes),
-      entry.profMood ?? '',
     ]
       .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
       .join(',')

@@ -6,7 +6,7 @@ export const ICON_SIZES = {
   mascotHero: 280,
   mascotGrid: 112,
   mascotGridSm: 88,
-  mascotGridLg: 220,
+  mascotGridLg: 280,
   mascotCard: 200,
   mascotMini: 72,
   mascotInline: 160,
